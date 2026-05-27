@@ -2,14 +2,13 @@ package model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class Client {
     private static int nextId = 1;
 
     private int idClient;
-    private String username;
-    private String parola;
 
     private String nume;
     private String cnp;
@@ -21,18 +20,18 @@ public class Client {
     private List<ContBancar> conturi;
     private List<Card> carduri;
 
-    public Client(String username,
-                  String parola,
+    private double venitDeclarat;
+
+    public Client(
                   String nume,
                   String cnp,
                   String telefon,
                   String email,
                   String serieNrCI,
-                  LocalDate dataExpirareCI) {
+                  LocalDate dataExpirareCI,
+                  double venitDeclarat) {
 
         this.idClient = nextId++;
-        this.username = username;
-        this.parola = parola;
         this.nume = nume;
         this.cnp = cnp;
         this.telefon = telefon;
@@ -40,6 +39,7 @@ public class Client {
         this.serieNrCI = serieNrCI;
         this.dataExpirareCI = dataExpirareCI;
         this.dataDeschidere = LocalDate.now();
+        venitDeclarat = venitDeclarat;
         this.conturi = new ArrayList<>();
         this.carduri = new ArrayList<>();
     }
@@ -49,4 +49,29 @@ public class Client {
     }
 
 
+    public List<ContBancar> getConturi() {
+        return this.conturi;
+    }
+
+    public List<Card> getCarduri() {
+        return this.carduri;
+    }
+
+    public double getVenitDeclarat() {
+        return this.venitDeclarat;
+    }
+
+    public String getSerieNrCI() {
+        return this.serieNrCI;
+    }
+
+    public List<Card> getCarduriActive() {
+        List<Card> carduri = new ArrayList<>();
+        for (Card card : this.carduri) {
+            if(card.isActiv()){
+                carduri.add(card);
+            }
+        }
+        return carduri;
+    }
 }

@@ -47,6 +47,9 @@ public class Card {
     }
 
     public void schimbaPin(String pin) {
+        if (pin == null || pin.length() != 4 || !pin.matches("^[0-9]+")) {
+            throw new IllegalArgumentException("PIN-ul trebuie să fie format din 4 cifre");
+        }
         this.pin = pin;
     }
 
@@ -67,6 +70,28 @@ public class Card {
     }
 
     public boolean isActiv() {
+
         return activ;
     }
+
+    public void setActiv(boolean activ) {
+        this.activ = activ;
+    }
+
+    public String getPan() {
+        return pan.substring(pan.length() - 4);
+    }
+
+    public Client getTitular() {
+        return titular;
+    }
+
+    public void afiseazaDetalii() {
+        System.out.println("\n");
+        System.out.println("Titular: " + this.numeTitular);
+        System.out.println("Numar Card: " + getPan());
+        System.out.println("Activ: " + isActiv());
+        System.out.println("Data Expirare: " + this.dataExpirare);
+    }
+
 }

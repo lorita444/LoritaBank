@@ -4,15 +4,14 @@ import java.time.LocalDate;
 
 public class Admin extends Client {
 
-    public Admin(String username,
-                 String parola,
-                 String nume,
+    public Admin(String nume,
                  String cnp,
                  String telefon,
                  String email,
                  String serieNrCI,
-                 LocalDate dataExpirareCI) {
+                 LocalDate dataExpirareCI,
+                 double venitDeclarat) {
 
-        super(username, parola, nume, cnp, telefon, email, serieNrCI, dataExpirareCI);
+        super(nume, cnp, telefon, email, serieNrCI, dataExpirareCI, venitDeclarat);
     }
 }

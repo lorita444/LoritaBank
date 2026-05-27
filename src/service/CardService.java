@@ -1,4 +1,83 @@
 package service;
 
+import exception.IdentificareEsuata;
+import model.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class CardService {
+    List<Card> toateCardurileEver = new ArrayList<>();
+
+    public void emiteCardDebit(Client client, ContCurent contAsociat) {
+        CardDebit card = new CardDebit(client, contAsociat);
+        client.getCarduri().add(card);
+
+        toateCardurileEver.add(card);
+        System.out.println("Cardul de debit a fost adaugat contului: " + contAsociat.getIban());
+    }
+
+    public void emiteCardCredit(Client client, double limitaCredit) {
+        if(limitaCredit <= 0 || limitaCredit > 3 * client.getVenitDeclarat()) {
+            throw new IllegalArgumentException("Limita cardului de credit este in afara parametrilor acceptati.");
+        }
+        CardCredit card = new CardCredit(client, limitaCredit);
+        toateCardurileEver.add(card);
+        client.getCarduri().add(card);
+        System.out.println("Cardul de credit a fost emis cu succes. Limită: " + limitaCredit + " RON");
+    }
+
+    public void blocheazaCard(Card card) {
+        if (!card.isActiv()) {
+            throw new IllegalStateException("Cardul este deja blocat.");
+        }
+
+        card.setActiv(false);
+        System.out.println("Cardul cu terminatia " + card.getPan() + " a fost blocat.");
+    }
+
+    public void deblocheazaCard(Card card) {
+        if (card.isActiv()) {
+            throw new IllegalStateException("Cardul este deja activ.");
+        }
+
+        card.setActiv(true);
+        System.out.println("Cardul cu terminatia " + card.getPan() + " a fost deblocat.");
+    }
+
+    public void schimbaPin(Card card, String pinNou, String serieNrCI) {
+        if(!serieNrCI.equalsIgnoreCase(card.getTitular().getSerieNrCI())) {
+            throw new IdentificareEsuata("Identificare esuata. Nu putem schimba PIN-ul");
+        }
+        card.schimbaPin(pinNou);
+        System.out.println("PIN-ul pentru cardul cu terminatia " + card.getPan() + "a fost schimbat.");
+    }
+
+    public void modificaLimita(CardDebit card, double limita, int nrCarduri) {
+        if(nrCarduri != card.getTitular().getCarduriActive().size()) {
+            throw new IdentificareEsuata("Identificare esuata. Nu putem modifica limitele cardurilor.");
+        }
+        card.setLimita(limita);
+    }
+
+    public void afiseazaCardurileToate() {
+        if(toateCardurileEver.isEmpty()) {
+            System.out.println("Nu exista carduri de afisat.");
+        }
+        for(Card card : toateCardurileEver) {
+            card.afiseazaDetalii();
+        }
+    }
+
+    public void afiseazaCarduriClient(Client client) {
+        if (client.getCarduriActive().isEmpty()) {
+            System.out.println("Clientul nu are niciun card activ.");
+            return;
+        }
+        for(Card card : client.getCarduriActive()) {
+            card.afiseazaDetalii();
+        }
+    }
+
+
 }

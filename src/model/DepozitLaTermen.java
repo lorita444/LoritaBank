@@ -20,14 +20,22 @@ public class DepozitLaTermen  extends ContBancar {
     }
 
     public double calculeazaDobanda() {
-        return getSold() * dobanda / 100;
+        return getSold() * this.dobanda / 100;
     }
 
     public double calculeazaSumaFinala() {
         double x = getSold();
-        for(int i = 1; i < perioada; i++) {
-           x = x * dobanda / 100;
+        for(int i = 1; i < this.perioada; i++) {
+           x = x * this.dobanda / 100;
         }
         return x;
+    }
+
+    @Override
+    public void retrage(double suma) {
+        if (LocalDate.now().isBefore(this.dataScadenta)) {
+            throw new IllegalStateException("Nu poți retrage bani dintr-un depozit la termen înainte de data de scadență: " + this.dataScadenta);
+        }
+        super.retrage(suma);
     }
 }

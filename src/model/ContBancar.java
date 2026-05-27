@@ -1,11 +1,14 @@
 package model;
 
+import exception.FonduriInsuficiente;
+import exception.SumaInvalida;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ContBancar {
+public abstract class ContBancar {
     private static int nextId = 1;
     private int idCont;
 
@@ -83,12 +86,39 @@ public class ContBancar {
     }
 
     public double getSold() {
+
         return sold;
     }
 
+    public void setSold(double sold) {
+        this.sold = sold;
+    }
+
+    public String getIban() {
+        return iban;
+    }
+
+    public String getMoneda() {
+        return moneda;
+    }
+
     public void depune(double suma) {
-        if (suma > 0) {
-            sold += suma;
+        if(suma < 0) {
+            throw new SumaInvalida("Suma aleasa nu este valida.");
+        } else {
+            setSold(suma + this.sold);
         }
+    }
+
+    public void retrage(double suma) {
+        if(suma < 0) {
+            throw new SumaInvalida("Suma aleasa nu este valida.");
+        }
+
+        if(this.sold < suma) {
+            throw new FonduriInsuficiente("Fonduri insuficiente.");
+        }
+
+        setSold(this.sold - suma);
     }
 }

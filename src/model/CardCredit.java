@@ -58,4 +58,15 @@ public class CardCredit extends Card{
 
         totalPlata += totalPlata * d;
     }
+
+    @Override
+    public void afiseazaDetalii() {
+        super.afiseazaDetalii();
+
+        System.out.println("Tip card: Credit");
+        System.out.println("Limita credit: " + this.limitaCredit + " RON");
+        System.out.println("Suma utilizata: " + this.totalPlata + " RON");
+        System.out.println("Dobanda: " + this.dobanda + "%");
+        System.out.println("\n");
+    }
 }
