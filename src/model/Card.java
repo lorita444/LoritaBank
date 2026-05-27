@@ -38,7 +38,7 @@ public class Card {
         Random rand = new Random();
         String pin = "";
 
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 4; i++) {
             pin = pin + String.valueOf(rand.nextInt(10));
         }
 
@@ -80,6 +80,13 @@ public class Card {
 
     public String getPan() {
         return pan.substring(pan.length() - 4);
+    }
+    public String getPIN() {
+        return pin;
+    }
+
+    public String getFullPan() {
+        return pan;
     }
 
     public Client getTitular() {

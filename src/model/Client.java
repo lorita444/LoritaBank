@@ -19,6 +19,7 @@ public class Client {
     private LocalDate dataDeschidere;
     private List<ContBancar> conturi;
     private List<Card> carduri;
+    private List<Tranzactie> tranzactii;
 
     private double venitDeclarat;
 
@@ -39,15 +40,15 @@ public class Client {
         this.serieNrCI = serieNrCI;
         this.dataExpirareCI = dataExpirareCI;
         this.dataDeschidere = LocalDate.now();
-        venitDeclarat = venitDeclarat;
+        this.venitDeclarat = venitDeclarat;
         this.conturi = new ArrayList<>();
         this.carduri = new ArrayList<>();
+        this.tranzactii = new ArrayList<>();
     }
 
     public String getNume() {
         return this.nume;
     }
-
 
     public List<ContBancar> getConturi() {
         return this.conturi;
@@ -73,5 +74,17 @@ public class Client {
             }
         }
         return carduri;
+    }
+
+    public List<Tranzactie> getTranzactii() {
+        return this.tranzactii;
+    }
+
+    public int getIdClient() {
+        return this.idClient;
+    }
+
+    public void getDetalii() {
+        System.out.println("CIF: " + this.idClient + "   Nume: " + this.nume);
     }
 }

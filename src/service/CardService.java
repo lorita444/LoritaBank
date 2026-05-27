@@ -15,6 +15,7 @@ public class CardService {
 
         toateCardurileEver.add(card);
         System.out.println("Cardul de debit a fost adaugat contului: " + contAsociat.getIban());
+        AuditService.log("Emitere card debit", Integer.toString(client.getIdClient()), "Cardul" + card.getFullPan() );
     }
 
     public void emiteCardCredit(Client client, double limitaCredit) {
@@ -25,6 +26,7 @@ public class CardService {
         toateCardurileEver.add(card);
         client.getCarduri().add(card);
         System.out.println("Cardul de credit a fost emis cu succes. Limită: " + limitaCredit + " RON");
+        AuditService.log("Emitere card credit", Integer.toString(client.getIdClient()), "Cardul" + card.getFullPan() );
     }
 
     public void blocheazaCard(Card card) {
@@ -34,6 +36,7 @@ public class CardService {
 
         card.setActiv(false);
         System.out.println("Cardul cu terminatia " + card.getPan() + " a fost blocat.");
+        AuditService.log("Blocare card", Integer.toString(card.getTitular().getIdClient()), "Cardul" + card.getFullPan() );
     }
 
     public void deblocheazaCard(Card card) {
@@ -43,14 +46,17 @@ public class CardService {
 
         card.setActiv(true);
         System.out.println("Cardul cu terminatia " + card.getPan() + " a fost deblocat.");
+        AuditService.log("Deblocare card", Integer.toString(card.getTitular().getIdClient()), "Cardul" + card.getFullPan() );
     }
 
     public void schimbaPin(Card card, String pinNou, String serieNrCI) {
         if(!serieNrCI.equalsIgnoreCase(card.getTitular().getSerieNrCI())) {
             throw new IdentificareEsuata("Identificare esuata. Nu putem schimba PIN-ul");
         }
+        AuditService.log("Reprint PIN", Integer.toString(card.getTitular().getIdClient()), "Cardul" + card.getFullPan() + ": " + card.getPIN() + "->" + pinNou);
         card.schimbaPin(pinNou);
         System.out.println("PIN-ul pentru cardul cu terminatia " + card.getPan() + "a fost schimbat.");
+
     }
 
     public void modificaLimita(CardDebit card, double limita, int nrCarduri) {
@@ -58,6 +64,8 @@ public class CardService {
             throw new IdentificareEsuata("Identificare esuata. Nu putem modifica limitele cardurilor.");
         }
         card.setLimita(limita);
+        AuditService.log("Modificare limita", Integer.toString(card.getTitular().getIdClient()), "Cardul" + card.getFullPan() + " limita: " + limita);
+
     }
 
     public void afiseazaCardurileToate() {

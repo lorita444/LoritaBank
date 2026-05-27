@@ -2,7 +2,7 @@ package model;
 
 public class CardDebit extends Card {
     private final ContCurent contAsociat;
-    private double limiita = 1500;
+    private double limita = 1500;
 
     public CardDebit(Client titular, ContCurent contAsociat) {
        super(titular);
@@ -10,7 +10,7 @@ public class CardDebit extends Card {
     }
 
     public void setLimita(double limita) {
-        this.limiita = limita;
+        this.limita = limita;
     }
 
     @Override
@@ -19,7 +19,7 @@ public class CardDebit extends Card {
 
         System.out.println("Tip dard: debit");
         System.out.println("Cont IBAN asociat: " + this.contAsociat.getIban());
-        System.out.println("Limita Zilnica POS: " + this.limiita + this.contAsociat.getMoneda()); // folosește numele variabilei tale din clasă
+        System.out.println("Limita Zilnica POS: " + this.limita + this.contAsociat.getMoneda()); // folosește numele variabilei tale din clasă
         System.out.println("/n");
     }
 }

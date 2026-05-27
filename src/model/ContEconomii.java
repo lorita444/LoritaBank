@@ -11,7 +11,7 @@ public class ContEconomii extends ContBancar {
         this.rataDobanda = 2.5f;
     }
 
-    public ContEconomii(String moneda,
+    public ContEconomii(Moneda moneda,
                         Client titular,
                         float rataDobanda) {
 

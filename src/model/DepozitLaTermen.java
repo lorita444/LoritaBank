@@ -8,7 +8,7 @@ public class DepozitLaTermen  extends ContBancar {
     private static double sumaMinima = 100000;
     private LocalDate dataScadenta;
 
-    public DepozitLaTermen(String moneda, Client titular, int perioada, double suma) {
+    public DepozitLaTermen(Moneda moneda, Client titular, int perioada, double suma) {
         if( suma < sumaMinima) {
             throw new IllegalArgumentException("Suma initiala este mai mica decat suma minima pentru depozit.");
         }
@@ -26,7 +26,7 @@ public class DepozitLaTermen  extends ContBancar {
     public double calculeazaSumaFinala() {
         double x = getSold();
         for(int i = 1; i < this.perioada; i++) {
-           x = x * this.dobanda / 100;
+           x += x * this.dobanda / 100;
         }
         return x;
     }

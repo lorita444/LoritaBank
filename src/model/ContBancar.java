@@ -14,7 +14,7 @@ public abstract class ContBancar {
 
     private String iban;
     private double sold = 0;
-    private String moneda;
+    private Moneda moneda;
 
     private boolean activ = true;
     private LocalDate dataDeschidere;
@@ -25,7 +25,7 @@ public abstract class ContBancar {
 
     private static int nextIbanNumber = 14567;
 
-    public ContBancar(String moneda, Client titular) {
+    public ContBancar(Moneda moneda, Client titular) {
         idCont = nextId++;
         this.moneda = moneda;
         this.dataDeschidere = LocalDate.now();
@@ -98,7 +98,7 @@ public abstract class ContBancar {
         return iban;
     }
 
-    public String getMoneda() {
+    public Moneda getMoneda() {
         return moneda;
     }
 
@@ -120,5 +120,9 @@ public abstract class ContBancar {
         }
 
         setSold(this.sold - suma);
+    }
+
+    public Client getTitular() {
+        return titular;
     }
 }

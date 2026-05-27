@@ -14,23 +14,28 @@ public class ContService {
         client.getConturi().add(contNou);
         toateConturileEver.add(contNou);
         System.out.println("Contul " + contNou.getIban() + " a fost activat pentru " + client.getNume());
+
+        AuditService.log("Creare cont", Integer.toString(client.getIdClient()), "Cont activat cu succes." );
     }
 
     public ContCurent deschideContCurent(String moneda, Client client) {
         ContCurent cont = new ContCurent(moneda, client);
         inregistreazaCont(client, cont);
+        AuditService.log("Deschidere cont curent", Integer.toString(client.getIdClient()), cont.getIban());
         return cont;
     }
 
     public ContEconomii deschideContEconomii(String moneda, Client client, float rataDobanda) {
         ContEconomii cont = new ContEconomii(moneda, client, rataDobanda);
         inregistreazaCont(client, cont);
+        AuditService.log("Deschidere cont economii", Integer.toString(client.getIdClient()), cont.getIban());
         return cont;
     }
 
     public DepozitLaTermen deschideDepozitLaTermen(String moneda, Client client, int perioada, double sumaInitiala) {
         DepozitLaTermen depozit = new DepozitLaTermen(moneda, client, perioada, sumaInitiala);
         inregistreazaCont(client, depozit);
+        AuditService.log("Deschidere depozit", Integer.toString(client.getIdClient()), depozit.getIban());
         return depozit;
     }
 
@@ -38,6 +43,7 @@ public class ContService {
         if (contBancar.getSold() != 0) {
             throw new IllegalStateException("Contul nu poate fi închis! Soldul trebuie să fie exact 0. Sold curent: " + contBancar.getSold());
         }
+        AuditService.log("Inchidere cont curent", Integer.toString(client.getIdClient()), contBancar.getIban());
         client.getConturi().remove(contBancar);
         toateConturileEver.remove(contBancar);
         System.out.println("Contul " + contBancar.getIban() + " a fost șters cu succes.");
@@ -45,14 +51,19 @@ public class ContService {
 
 
     public void depune(ContBancar contBancar, double suma){
+
         contBancar.depune(suma);
+        AuditService.log("Depunere", Integer.toString(contBancar.getTitular().getIdClient()), "suma " + Double.toString(suma) + " in " + contBancar.getIban());
     }
 
     public void retrage(ContBancar contBancar, double suma){
+
         contBancar.retrage(suma);
+        AuditService.log("Retragere", Integer.toString(contBancar.getTitular().getIdClient()), "suma " + Double.toString(suma) + " in " + contBancar.getIban());
     }
 
     public void afiseazaSold(ContBancar contBancar) {
         System.out.println("Soldul contului " + contBancar.getIban() + " este: " + contBancar.getSold() + " " + contBancar.getMoneda());
+        AuditService.log("Afisare sold", Integer.toString(contBancar.getTitular().getIdClient()), contBancar.getIban());
     }
 }
