@@ -10,7 +10,7 @@ public class ContBancar {
     private int idCont;
 
     private String iban;
-    private float sold = 0;
+    private double sold = 0;
     private String moneda;
 
     private boolean activ = true;
@@ -80,5 +80,15 @@ public class ContBancar {
         }
 
         return true;
+    }
+
+    public double getSold() {
+        return sold;
+    }
+
+    public void depune(double suma) {
+        if (suma > 0) {
+            sold += suma;
+        }
     }
 }

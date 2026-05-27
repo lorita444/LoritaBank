@@ -11,7 +11,6 @@ public class Card {
     private String pan;
     private String numeTitular;
     private Client titular;
-    private ContBancar contAsociat;
 
     private String pin;
     private String cvv;
@@ -21,19 +20,34 @@ public class Card {
 
     private static long nextPan = 1L;
 
-    public Card(Client titular, ContBancar contAsociat, String pin) {
+    public Card(Client titular) {
         this.idCard = nextId++;
         this.titular = titular;
-        this.contAsociat = contAsociat;
         this.numeTitular = titular.getNume();
 
         this.pan = genereazaPan();
         this.cvv = genereazaCVV();
-        this.pin = pin;
+        this.pin = genereaza_pin();
 
         this.dataEmitere = LocalDate.now();
         this.dataExpirare = dataEmitere.plusYears(4);
         this.activ = true;
+    }
+
+    private static String genereaza_pin() {
+        Random rand = new Random();
+        String pin = "";
+
+        for(int i = 0; i < 10; i++) {
+            pin = pin + String.valueOf(rand.nextInt(10));
+        }
+
+        return pin;
+
+    }
+
+    public void schimbaPin(String pin) {
+        this.pin = pin;
     }
 
     private static String genereazaPan() {
@@ -52,4 +66,7 @@ public class Card {
         return cvv;
     }
 
+    public boolean isActiv() {
+        return activ;
+    }
 }

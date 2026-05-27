@@ -2,7 +2,14 @@ package model;
 
 public class ContEconomii extends ContBancar {
 
-    private float rataDobanda = 2.5f;
+    private float rataDobanda;
+
+    public ContEconomii(String moneda,
+                        Client titular) {
+
+        super(moneda, titular);
+        this.rataDobanda = 2.5f;
+    }
 
     public ContEconomii(String moneda,
                         Client titular,
@@ -11,4 +18,5 @@ public class ContEconomii extends ContBancar {
         super(moneda, titular);
         this.rataDobanda = rataDobanda;
     }
+
 }
