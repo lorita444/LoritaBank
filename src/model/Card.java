@@ -3,7 +3,7 @@ package model;
 import java.time.LocalDate;
 import java.util.Random;
 
-public class Card {
+public abstract class Card {
     private static int nextId = 1;
 
     private int idCard;
@@ -100,5 +100,7 @@ public class Card {
         System.out.println("Activ: " + isActiv());
         System.out.println("Data Expirare: " + this.dataExpirare);
     }
+
+    public abstract boolean plateste(double suma);
 
 }

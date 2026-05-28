@@ -10,15 +10,30 @@ public class ClientService {
     private List<Client> clienti = new ArrayList<>();
 
     public void adaugaClient(Client client) {
-
         clienti.add(client);
-        AuditService.log("Adauga client", Integer.toString(client.getIdClient()), "Client adaugat cu succes" );
+        AuditService.log("Adauga client", Integer.toString(client.getIdClient()), "Client adaugat cu succes");
     }
 
     public void afiseazaClienti() {
-
-        for(Client client : clienti) {
+        if (clienti.isEmpty()) {
+            System.out.println("Nu exista clienti inregistrati.");
+            return;
+        }
+        for (Client client : clienti) {
             client.getDetalii();
         }
+    }
+
+    public Client cautaClient(String cnp) {
+        for (Client client : clienti) {
+            if (client.getCnp().equals(cnp)){
+                return client;
+            }
+        }
+        return null;
+    }
+
+    public List<Client> getClienti() {
+        return clienti;
     }
 }

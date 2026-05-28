@@ -77,6 +77,8 @@ public class CardService {
         }
     }
 
+
+
     public void afiseazaCarduriClient(Client client) {
         if (client.getCarduriActive().isEmpty()) {
             System.out.println("Clientul nu are niciun card activ.");
@@ -87,5 +89,17 @@ public class CardService {
         }
     }
 
+    public void plataCard(Card card, double suma) {
+        if(card.plateste(suma)) {
+            System.out.println("Plata s-a efectuat cu succes.");
+            AuditService.log("Plata card", Integer.toString(card.getTitular().getIdClient()), "Card " + card.getPan() + " suma: " + Double.toString(suma));
+        }
+    }
+
+    public void ramburseaza(CardCredit card, double suma) {
+        if(card.ramburseaza(suma)) {
+            AuditService.log("Rambursare cc", Integer.toString(card.getTitular().getIdClient()), "Card " + card.getPan());
+        } else AuditService.log("Rambursare esuata", Integer.toString(card.getTitular().getIdClient()), "Card " + card.getPan());
+    }
 
 }

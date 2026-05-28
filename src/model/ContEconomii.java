@@ -1,10 +1,12 @@
 package model;
 
-public class ContEconomii extends ContBancar {
+import Interfaces.Dobandibil;
+
+public class ContEconomii extends ContBancar implements Dobandibil {
 
     private float rataDobanda;
 
-    public ContEconomii(String moneda,
+    public ContEconomii(Moneda moneda,
                         Client titular) {
 
         super(moneda, titular);
@@ -17,6 +19,17 @@ public class ContEconomii extends ContBancar {
 
         super(moneda, titular);
         this.rataDobanda = rataDobanda;
+    }
+
+    @Override
+    public double calculeazaDobanda() {
+        return getSold() * rataDobanda / 100;
+    }
+
+    @Override
+    public void aplicaDobanda() {
+        double d = calculeazaDobanda();
+        setSold(getSold() + d);
     }
 
 }

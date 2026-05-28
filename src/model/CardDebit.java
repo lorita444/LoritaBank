@@ -17,9 +17,33 @@ public class CardDebit extends Card {
     public void afiseazaDetalii() {
         super.afiseazaDetalii();
 
-        System.out.println("Tip dard: debit");
+        System.out.println("Tip card: Debit");
         System.out.println("Cont IBAN asociat: " + this.contAsociat.getIban());
-        System.out.println("Limita Zilnica POS: " + this.limita + this.contAsociat.getMoneda()); // folosește numele variabilei tale din clasă
-        System.out.println("/n");
+        System.out.println("Limita Zilnica POS: " + this.limita + " " + this.contAsociat.getMoneda());
+        System.out.println("\n");
+    }
+
+    @Override
+    public boolean plateste(double suma) {
+        if (!isActiv()) {
+            System.out.println("Plata esuata. Cardul este blocat.");
+            return false;
+        }
+        if (suma <= 0) {
+            System.out.println("Suma trebuie să fie pozitiva.");
+            return false;
+        }
+        if (suma > this.limita) {
+            System.out.println("Limita cardului depasita.");
+            return false;
+        }
+
+        try {
+            this.contAsociat.retrage(suma);
+            return true;
+        } catch (Exception e) {
+            System.out.println("Tranzacție refuzată: " + e.getMessage());
+            return false;
+        }
     }
 }

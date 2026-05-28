@@ -11,4 +11,8 @@ public class ContCurent extends ContBancar {
         super(moneda, titular);
         this.carduriAsociate = new ArrayList<>();
     }
+
+    public List<Card> getCarduriAsociate() {
+        return carduriAsociate;
+    }
 }

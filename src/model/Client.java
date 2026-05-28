@@ -24,13 +24,13 @@ public class Client {
     private double venitDeclarat;
 
     public Client(
-                  String nume,
-                  String cnp,
-                  String telefon,
-                  String email,
-                  String serieNrCI,
-                  LocalDate dataExpirareCI,
-                  double venitDeclarat) {
+            String nume,
+            String cnp,
+            String telefon,
+            String email,
+            String serieNrCI,
+            LocalDate dataExpirareCI,
+            double venitDeclarat) {
 
         this.idClient = nextId++;
         this.nume = nume;
@@ -69,7 +69,7 @@ public class Client {
     public List<Card> getCarduriActive() {
         List<Card> carduri = new ArrayList<>();
         for (Card card : this.carduri) {
-            if(card.isActiv()){
+            if (card.isActiv()) {
                 carduri.add(card);
             }
         }
@@ -87,4 +87,9 @@ public class Client {
     public void getDetalii() {
         System.out.println("CIF: " + this.idClient + "   Nume: " + this.nume);
     }
+
+    public String getCnp() {
+        return cnp;
+    }
+
 }
