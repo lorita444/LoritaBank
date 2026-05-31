@@ -28,9 +28,9 @@ public class Tranzactie {
         System.out.println("Cod de referinta: " + this.idTranzactie);
         System.out.println("Data: " + this.data);
         System.out.println("Ordonator: " + this.contSursa.getTitular().getNume());
-        System.out.println("Cont sursa: " + this.contSursa);
+        System.out.println("Cont sursa: " + this.contSursa.getIban());
         System.out.println("Beneficiar: " + this.contDestinatie.getTitular().getNume());
-        System.out.println("Cont destinatie: " + this.contDestinatie);
+        System.out.println("Cont destinatie: " + this.contDestinatie.getIban());
         System.out.println("Suma: " + this.suma + " RON");
         System.out.println("Detalii: " + this.detalii);
         System.out.println("\n");
@@ -40,11 +40,35 @@ public class Tranzactie {
         return data;
     }
 
+    public void setData(LocalDate data) {
+        this.data = data;
+    }
+
     public ContBancar getContSursa() {
         return contSursa;
     }
 
     public ContBancar getContDestinatie() {
         return contDestinatie;
+    }
+
+    public int getId() {
+        return idTranzactie;
+    }
+
+    public void setId(int id) {
+        this.idTranzactie = id;
+    }
+
+    public double getSuma() {
+        return suma;
+    }
+
+    public Moneda getMoneda() {
+        return moneda;
+    }
+
+    public String getDetalii() {
+        return detalii;
     }
 }

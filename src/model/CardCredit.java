@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import static java.lang.Math.abs;
 
 public class CardCredit extends Card implements Dobandibil {
-    private final double limitaCredit;
+    private double limitaCredit;
     private double totalPlata = 0;
     private double minimPlata = 0;
     private double sumaUtilizata = 0;
@@ -90,6 +90,7 @@ public class CardCredit extends Card implements Dobandibil {
         }
 
         this.totalPlata += suma;
+        this.limitaCredit -= suma;
         this.minimPlata = this.totalPlata * 0.1;
         return true;
     }
@@ -116,5 +117,29 @@ public class CardCredit extends Card implements Dobandibil {
         }
 
         return true;
+    }
+
+    public double getLimitaCredit() {
+        return limitaCredit;
+    }
+
+    public double getTotalPlata() {
+        return totalPlata;
+    }
+
+    public void setTotalPlata(double totalPlata) {
+        this.totalPlata = totalPlata;
+    }
+
+    public double getMinimPlata() {
+        return minimPlata;
+    }
+
+    public void setMinimPlata(double minimPlata) {
+        this.minimPlata = minimPlata;
+    }
+
+    public double getDobanda() {
+        return dobanda;
     }
 }

@@ -10,7 +10,7 @@ import java.util.List;
 
 public abstract class ContBancar {
     private static int nextId = 1;
-    private int idCont;
+    private int id_cont;
 
     private String iban;
     private double sold = 0;
@@ -23,10 +23,10 @@ public abstract class ContBancar {
     private Client titular;
     private List<Client> mandatati;
 
-    private static int nextIbanNumber = 14567;
+    private static int nextIbanNumber = 67845;
 
     public ContBancar(Moneda moneda, Client titular) {
-        idCont = nextId++;
+        id_cont = nextId++;
         this.moneda = moneda;
         this.dataDeschidere = LocalDate.now();
         this.titular = titular;
@@ -124,5 +124,37 @@ public abstract class ContBancar {
 
     public Client getTitular() {
         return titular;
+    }
+
+    public int getId() {
+        return id_cont;
+    }
+
+    public void setId(int id) {
+        this.id_cont = id;
+    }
+
+    public LocalDate getDataDeschidere() {
+        return dataDeschidere;
+    }
+
+    public void setDataDeschidere(LocalDate dataDeschidere) {
+        this.dataDeschidere = dataDeschidere;
+    }
+
+    public LocalDate getDataInchidere() {
+        return dataInchidere;
+    }
+
+    public void setDataInchidere(LocalDate dataInchidere) {
+        this.dataInchidere = dataInchidere;
+    }
+
+    public boolean isActiv() {
+        return activ;
+    }
+
+    public void setActiv(boolean activ) {
+        this.activ = activ;
     }
 }

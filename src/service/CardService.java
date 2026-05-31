@@ -102,4 +102,7 @@ public class CardService {
         } else AuditService.log("Rambursare esuata", Integer.toString(card.getTitular().getIdClient()), "Card " + card.getPan());
     }
 
+    public List<Card> getToateCardurileEver() {
+        return toateCardurileEver;
+    }
 }

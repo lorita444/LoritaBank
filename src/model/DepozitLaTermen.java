@@ -42,4 +42,20 @@ public class DepozitLaTermen  extends ContBancar implements Dobandibil {
         }
         setSold(getSold() + calculeazaDobanda());
     }
+
+    public int getPerioada() {
+        return perioada;
+    }
+
+    public LocalDate getDataScadenta() {
+        return dataScadenta;
+    }
+
+    public void setDataScadenta(LocalDate dataScadenta) {
+        this.dataScadenta = dataScadenta;
+    }
+
+    public double getDobanda() {
+        return dobanda;
+    }
 }

@@ -2,13 +2,12 @@ package model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 public class Client {
     private static int nextId = 1;
 
-    private int idClient;
+    private int id_client = 1;
 
     private String nume;
     private String cnp;
@@ -32,7 +31,7 @@ public class Client {
             LocalDate dataExpirareCI,
             double venitDeclarat) {
 
-        this.idClient = nextId++;
+        this.id_client = nextId++;
         this.nume = nume;
         this.cnp = cnp;
         this.telefon = telefon;
@@ -81,15 +80,42 @@ public class Client {
     }
 
     public int getIdClient() {
-        return this.idClient;
+        return this.id_client;
     }
 
     public void getDetalii() {
-        System.out.println("CIF: " + this.idClient + "   Nume: " + this.nume);
+        System.out.println("CIF: " + this.id_client + "   Nume: " + this.nume);
     }
 
     public String getCnp() {
         return cnp;
     }
 
+    public String getTelefon() {
+        return telefon;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public LocalDate getDataExpirareCI() {
+        return dataExpirareCI;
+    }
+
+    public int getId() {
+        return id_client;
+    }
+
+    public void setId(int id) {
+        this.id_client = id;
+    }
+
+    public LocalDate getDataDeschidere() {
+        return dataDeschidere;
+    }
+
+    public void setDataDeschidere(LocalDate dataDeschidere) {
+        this.dataDeschidere = dataDeschidere;
+    }
 }

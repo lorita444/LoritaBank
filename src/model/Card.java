@@ -6,7 +6,7 @@ import java.util.Random;
 public abstract class Card {
     private static int nextId = 1;
 
-    private int idCard;
+    private int id_card;
     private boolean activ;
     private String pan;
     private String numeTitular;
@@ -21,7 +21,7 @@ public abstract class Card {
     private static long nextPan = 1L;
 
     public Card(Client titular) {
-        this.idCard = nextId++;
+        this.id_card = nextId++;
         this.titular = titular;
         this.numeTitular = titular.getNume();
 
@@ -93,6 +93,14 @@ public abstract class Card {
         return titular;
     }
 
+    public void setPan(String pan) {
+        this.pan = pan;
+    }
+
+    public void setPin(String pin) {
+        this.pin = pin;
+    }
+
     public void afiseazaDetalii() {
         System.out.println("\n");
         System.out.println("Titular: " + this.numeTitular);
@@ -103,4 +111,47 @@ public abstract class Card {
 
     public abstract boolean plateste(double suma);
 
+    public int getId() {
+        return id_card;
+    }
+
+    public void setId(int id) {
+        this.id_card = id;
+    }
+
+    public String getCvv() {
+        return cvv;
+    }
+
+    public void setCvv(String cvv) {
+        this.cvv = cvv;
+    }
+
+    public String getNumeTitular() {
+        return numeTitular;
+    }
+
+    public void setNumeTitular(String numeTitular) {
+        this.numeTitular = numeTitular;
+    }
+
+    public LocalDate getDataEmitere() {
+        return dataEmitere;
+    }
+
+    public void setDataEmitere(LocalDate dataEmitere) {
+        this.dataEmitere = dataEmitere;
+    }
+
+    public LocalDate getDataExpirare() {
+        return dataExpirare;
+    }
+
+    public void setDataExpirare(LocalDate dataExpirare) {
+        this.dataExpirare = dataExpirare;
+    }
+
+    public String getRawPin() {
+        return pin;
+    }
 }

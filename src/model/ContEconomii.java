@@ -32,4 +32,11 @@ public class ContEconomii extends ContBancar implements Dobandibil {
         setSold(getSold() + d);
     }
 
+    public float getRataDobanda() {
+        return rataDobanda;
+    }
+
+    public void setRataDobanda(float rataDobanda) {
+        this.rataDobanda = rataDobanda;
+    }
 }

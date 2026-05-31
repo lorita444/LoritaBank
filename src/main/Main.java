@@ -2,8 +2,10 @@ package main;
 
 import model.*;
 import service.*;
+import repository.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,14 +18,37 @@ public class Main {
     private static final CardService cardService = new CardService();
     private static final TranzactieService tranzactieService = new TranzactieService();
 
-    // ─────────────────────────────────────────────
-    //  ENTRY POINT
-    // ─────────────────────────────────────────────
+    private static void initializeDataFromDatabase() {
+        try {
+            ClientRepository clientRepo = ClientRepository.getInstance();
+            ContRepository contRepo = ContRepository.getInstance();
+            CardRepository cardRepo = CardRepository.getInstance();
+            TranzactiiRepository tranzactiiRepo = TranzactiiRepository.getInstance();
+
+            List<Client> loadedClienti = clientRepo.findAll();
+            clientService.getClienti().addAll(loadedClienti);
+
+            List<ContBancar> loadedConturi = contRepo.findAll(loadedClienti);
+            contService.getToateConturileEver().addAll(loadedConturi);
+
+            List<Card> loadedCarduri = cardRepo.findAll(loadedClienti, loadedConturi);
+            cardService.getToateCardurileEver().addAll(loadedCarduri);
+
+            List<Tranzactie> loadedTranzactii = tranzactiiRepo.findAll(loadedConturi);
+            tranzactieService.toateTranzactiileEver.addAll(loadedTranzactii);
+            
+            System.out.println("Date incarcate");
+        } catch (Exception e) {
+            System.err.println("Eroare la incarcarea datelor din baza de date:");
+            e.printStackTrace();
+        }
+    }
+
+
     public static void main(String[] args) {
+        initializeDataFromDatabase();
         while (true) {
-            System.out.println("\n╔══════════════════════╗");
-            System.out.println("║      LoritaBank      ║");
-            System.out.println("╚══════════════════════╝");
+            System.out.println("Bun venit la LoritaBank!");
             System.out.println("1. Login");
             System.out.println("0. Iesire");
             System.out.print("Alege optiunea: ");
@@ -40,11 +65,8 @@ public class Main {
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  LOGIN
-    // ─────────────────────────────────────────────
     private static void meniuLogin() {
-        System.out.println("\n--- LOGIN ---");
+        System.out.println("\nLogin");
         System.out.println("1. Admin");
         System.out.println("2. Client");
         System.out.println("0. Inapoi");
@@ -53,7 +75,7 @@ public class Main {
         int tip = citesteInt();
         switch (tip) {
             case 1:
-                meniuAdmin();
+                meniuLoginAdmin();
                 break;
             case 2:
                 meniuLoginClient();
@@ -65,24 +87,33 @@ public class Main {
         }
     }
 
+    private static void meniuLoginAdmin() {
+        System.out.print("Introduceti CNP-ul adminului: ");
+        String cnp = scanner.nextLine().trim();
+        Client client = clientService.cautaClient(cnp);
+        if (client == null || !(client instanceof Admin)) {
+            System.out.println("Eroare: Nu aveti drepturi de administrator!");
+            return;
+        }
+        System.out.println("Autentificare reusita! Bun venit, " + client.getNume() + " (Admin)!");
+        meniuAdmin();
+    }
+
     private static void meniuLoginClient() {
         System.out.print("Introduceti CNP-ul clientului: ");
         String cnp = scanner.nextLine().trim();
         Client client = clientService.cautaClient(cnp);
         if (client == null) {
-            System.out.println("Clientul cu CNP-ul " + cnp + " nu a fost gasit.");
+            System.out.println("Clientul cu CNP " + cnp + " nu a fost gasit.");
             return;
         }
         System.out.println("Bun venit, " + client.getNume() + "!");
         meniuClient(client);
     }
 
-    // ─────────────────────────────────────────────
-    //  MENIU ADMIN
-    // ─────────────────────────────────────────────
     private static void meniuAdmin() {
         while (true) {
-            System.out.println("\n=== MENIU ADMIN ===");
+            System.out.println("\nMENIU ADMIN");
             System.out.println("1. Adauga client");
             System.out.println("2. Afiseaza toti clientii");
             System.out.println("3. Cauta client");
@@ -101,7 +132,7 @@ public class Main {
     }
 
     private static void adaugaClientFlow() {
-        System.out.println("\n--- Adauga Client ---");
+        System.out.println("\n Adauga Client ");
         System.out.print("Nume: ");
         String nume = scanner.nextLine();
         System.out.print("CNP: ");
@@ -119,7 +150,8 @@ public class Main {
 
         Client client = new Client(nume, cnp, telefon, email, ci, dataExp, venit);
         clientService.adaugaClient(client);
-        System.out.println("Client adaugat cu succes! ID: " + client.getIdClient());
+        ClientRepository.getInstance().save(client);
+        System.out.println("Client adaugat cu succes. ID: " + client.getIdClient());
     }
 
     private static void cautaClientAdmin() {
@@ -136,7 +168,7 @@ public class Main {
 
     private static void meniuOperatiiAdmin(Client client) {
         while (true) {
-            System.out.println("\n--- Operatii pentru: " + client.getNume() + " ---");
+            System.out.println("\nOperatii pentru: " + client.getNume());
             System.out.println("1. Operatii conturi");
             System.out.println("2. Operatii carduri");
             System.out.println("0. Inapoi");
@@ -152,12 +184,10 @@ public class Main {
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  OPERATII CONTURI - ADMIN
-    // ─────────────────────────────────────────────
+
     private static void meniuConturiAdmin(Client client) {
         while (true) {
-            System.out.println("\n=== OPERATII CONTURI ===");
+            System.out.println("\n Operatii conturi:");
             System.out.println("1. Adauga cont curent");
             System.out.println("2. Adauga cont economii");
             System.out.println("3. Adauga depozit la termen");
@@ -166,19 +196,21 @@ public class Main {
             System.out.println("6. Retrage bani");
             System.out.println("7. Vezi tranzactii");
             System.out.println("8. Calculeaza dobanda");
+            System.out.println("9. Aplica dobanda");
             System.out.println("0. Inapoi");
             System.out.print("Alege optiunea: ");
 
             int opt = citesteInt();
             switch (opt) {
                 case 1: adaugaContCurentFlow(client); break;
-                case 2: adaugaContEconomiiFlow(client); break;
+                case 2: adaugaContEconomiiFlowAdmin(client); break;
                 case 3: adaugaDepozitFlow(client); break;
                 case 4: stergContFlow(client); break;
                 case 5: depuneFlow(client); break;
                 case 6: retrageContFlow(client); break;
                 case 7: veziTranzactiiFlow(client); break;
                 case 8: calculeazaDobandaContFlow(client); break;
+                case 9: aplicaDobandaContFlow(client); break;
                 case 0: return;
                 default: System.out.println("Optiune invalida.");
             }
@@ -188,15 +220,24 @@ public class Main {
     private static void adaugaContCurentFlow(Client client) {
         Moneda moneda = selecteazaMoneda();
         if (moneda == null) return;
-        contService.deschideContCurent(moneda, client);
+        ContCurent cont = contService.deschideContCurent(moneda, client);
+        ContRepository.getInstance().save(cont);
     }
 
     private static void adaugaContEconomiiFlow(Client client) {
         Moneda moneda = selecteazaMoneda();
         if (moneda == null) return;
+        ContEconomii cont = contService.deschideContEconomii(moneda, client);
+        ContRepository.getInstance().save(cont);
+    }
+
+    private static void adaugaContEconomiiFlowAdmin(Client client) {
+        Moneda moneda = selecteazaMoneda();
+        if (moneda == null) return;
         System.out.print("Rata dobanda (%): ");
         float rata = (float) citesteDouble();
-        contService.deschideContEconomii(moneda, client, rata);
+        ContEconomii cont = contService.deschideContEconomiiAdmin(moneda, client, rata);
+        ContRepository.getInstance().save(cont);
     }
 
     private static void adaugaDepozitFlow(Client client) {
@@ -207,7 +248,8 @@ public class Main {
         System.out.print("Suma initiala (min 100000): ");
         double suma = citesteDouble();
         try {
-            contService.deschideDepozitLaTermen(moneda, client, perioada, suma);
+            DepozitLaTermen cont = contService.deschideDepozitLaTermen(moneda, client, perioada, suma);
+            ContRepository.getInstance().save(cont);
         } catch (IllegalArgumentException e) {
             System.out.println("Eroare: " + e.getMessage());
         }
@@ -218,6 +260,14 @@ public class Main {
         if (cont == null) return;
         try {
             contService.inchideCont(client, cont);
+            ContRepository.getInstance().delete(cont);
+            for (Card c : client.getCarduri()) {
+                if (c instanceof CardDebit cardDebit) {
+                    if (cardDebit.getContAsociat() != null && cardDebit.getContAsociat().getId() == cont.getId()) {
+                        cardDebit.setActiv(false);
+                    }
+                }
+            }
         } catch (IllegalStateException e) {
             System.out.println("Eroare: " + e.getMessage());
         }
@@ -230,6 +280,7 @@ public class Main {
         double suma = citesteDouble();
         try {
             contService.depune(cont, suma);
+            ContRepository.getInstance().updateSold(cont);
             System.out.println("Depunere efectuata. Sold nou: " + cont.getSold());
         } catch (Exception e) {
             System.out.println("Eroare: " + e.getMessage());
@@ -243,6 +294,7 @@ public class Main {
         double suma = citesteDouble();
         try {
             contService.retrage(cont, suma);
+            ContRepository.getInstance().updateSold(cont);
             System.out.println("Retragere efectuata. Sold nou: " + cont.getSold());
         } catch (Exception e) {
             System.out.println("Eroare: " + e.getMessage());
@@ -250,13 +302,22 @@ public class Main {
     }
 
     private static void veziTranzactiiFlow(Client client) {
-        List<Tranzactie> lista = client.getTranzactii();
-        if (lista.isEmpty()) {
-            System.out.println("Nu exista tranzactii.");
-            return;
-        }
-        for (Tranzactie t : lista) {
-            t.afiseazaDetalii();
+        System.out.println("\nVizualizare tranzactii");
+        System.out.println("1. Afiseaza toate tranzactiile.");
+        System.out.println("2. Filtreaza tranzactiile.");
+        System.out.println("0. Inapoi");
+        System.out.print("Alege optiunea: ");
+        int opt = citesteInt();
+        if (opt == 1) {
+            tranzactieService.afiseazaTranzactiile(client);
+        } else if (opt == 2) {
+            ContBancar cont = selecteazaCont(client);
+            if (cont == null) return;
+            System.out.print("Introduceti data de inceput (YYYY-MM-DD): ");
+            LocalDate start = LocalDate.parse(scanner.nextLine().trim());
+            System.out.print("Introduceti data de sfarsit (YYYY-MM-DD): ");
+            LocalDate end = LocalDate.parse(scanner.nextLine().trim());
+            tranzactieService.afiseazaTranzactiiFiltrate(client, cont, start, end);
         }
     }
 
@@ -271,17 +332,16 @@ public class Main {
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  OPERATII CARDURI - ADMIN
-    // ─────────────────────────────────────────────
+
     private static void meniuCarduriAdmin(Client client) {
         while (true) {
-            System.out.println("\n=== OPERATII CARDURI ===");
+            System.out.println("\nOperatii carduri");
             System.out.println("1. Emite card debit");
             System.out.println("2. Emite card credit");
             System.out.println("3. Blocheaza card");
             System.out.println("4. Modifica limita (card debit - nelimitata)");
             System.out.println("5. Calculeaza dobanda (card credit)");
+            System.out.println("6. Aplica dobanda (card credit)");
             System.out.println("0. Inapoi");
             System.out.print("Alege optiunea: ");
 
@@ -292,6 +352,7 @@ public class Main {
                 case 3: blocheazaCardFlow(client); break;
                 case 4: modificaLimitaAdminFlow(client); break;
                 case 5: calculeazaDobandaCardFlow(client); break;
+                case 6: aplicaDobandaCardFlow(client); break;
                 case 0: return;
                 default: System.out.println("Optiune invalida.");
             }
@@ -300,7 +361,7 @@ public class Main {
 
     private static void emiteCardDebitFlow(Client client) {
         List<ContBancar> conturi = client.getConturi();
-        List<ContBancar> curente = new java.util.ArrayList<>();
+        List<ContBancar> curente = new ArrayList<>();
         for (ContBancar c : conturi) {
             if (c instanceof ContCurent) curente.add(c);
         }
@@ -315,13 +376,12 @@ public class Main {
         System.out.print("Alege: ");
         int idx = citesteInt() - 1;
         if (idx < 0 || idx >= curente.size()) { System.out.println("Selectie invalida."); return; }
-        // retinem marimea listei inainte de emitere ca sa gasim cardul nou
         int nrInainte = client.getCarduri().size();
         cardService.emiteCardDebit(client, (ContCurent) curente.get(idx));
-        // afisam PIN-ul cardului tocmai emis
         if (client.getCarduri().size() > nrInainte) {
             Card cardNou = client.getCarduri().get(client.getCarduri().size() - 1);
-            System.out.println(">>> PIN card: " + cardNou.getPIN() + " (retineti-l in siguranta!) <<<");
+            CardRepository.getInstance().save(cardNou);
+            System.out.println(">>> PIN card: " + cardNou.getPIN() + " Retine-l!");
         }
     }
 
@@ -331,9 +391,9 @@ public class Main {
         try {
             int nrInainte = client.getCarduri().size();
             cardService.emiteCardCredit(client, limita);
-            // afisam PIN-ul cardului tocmai emis
             if (client.getCarduri().size() > nrInainte) {
                 Card cardNou = client.getCarduri().get(client.getCarduri().size() - 1);
+                CardRepository.getInstance().save(cardNou);
                 System.out.println(">>> PIN card: " + cardNou.getPIN() + " (retineti-l in siguranta!) <<<");
             }
         } catch (IllegalArgumentException e) {
@@ -346,6 +406,7 @@ public class Main {
         if (card == null) return;
         try {
             cardService.blocheazaCard(card);
+            CardRepository.getInstance().updateStatusOrPin(card);
         } catch (IllegalStateException e) {
             System.out.println("Eroare: " + e.getMessage());
         }
@@ -360,7 +421,6 @@ public class Main {
         }
         System.out.print("Limita noua (0 = nelimitata): ");
         double limita = citesteDouble();
-        // admin poate seta orice limita, inclusiv 0 = nelimitata (Double.MAX_VALUE)
         double limitaSetata = (limita == 0) ? Double.MAX_VALUE : limita;
         int nrCarduri = client.getCarduriActive().size();
         try {
@@ -382,12 +442,59 @@ public class Main {
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  MENIU CLIENT
-    // ─────────────────────────────────────────────
+    private static void ramburseazaCreditFlow(Client client) {
+        Card card = selecteazaCard(client);
+        if (card == null) return;
+        if (!(card instanceof CardCredit)) {
+            System.out.println("Aceasta operatie este disponibila doar pentru carduri de credit.");
+            return;
+        }
+        System.out.print("Suma de rambursat: ");
+        double suma = citesteDouble();
+        try {
+            cardService.ramburseaza((CardCredit) card, suma);
+            CardRepository.getInstance().updateCreditData((CardCredit) card);
+        } catch (Exception e) {
+            System.out.println("Eroare: " + e.getMessage());
+        }
+    }
+
+    private static void aplicaDobandaContFlow(Client client) {
+        ContBancar cont = selecteazaCont(client);
+        if (cont == null) return;
+        if (cont instanceof Interfaces.Dobandibil) {
+            try {
+                ((Interfaces.Dobandibil) cont).aplicaDobanda();
+                ContRepository.getInstance().updateSold(cont);
+                System.out.println("Dobanda a fost aplicata cu succes! Sold nou: " + cont.getSold() + " " + cont.getMoneda());
+            } catch (Exception e) {
+                System.out.println("Eroare la aplicarea dobanzii: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Acest tip de cont nu are dobanda.");
+        }
+    }
+
+    private static void aplicaDobandaCardFlow(Client client) {
+        Card card = selecteazaCard(client);
+        if (card == null) return;
+        if (card instanceof CardCredit) {
+            try {
+                ((CardCredit) card).aplicaDobanda();
+                CardRepository.getInstance().updateCreditData((CardCredit) card);
+                System.out.println("Dobanda a fost aplicata cu succes!");
+            } catch (Exception e) {
+                System.out.println("Eroare la aplicarea dobanzii: " + e.getMessage());
+            }
+        } else {
+            System.out.println("Cardul debit nu are dobanda.");
+        }
+    }
+
+
     private static void meniuClient(Client client) {
         while (true) {
-            System.out.println("\n=== MENIU CLIENT: " + client.getNume() + " ===");
+            System.out.println("\nMeniu client: " + client.getNume() + " ===");
             System.out.println("1. Conturile mele");
             System.out.println("2. Cardurile mele");
             System.out.println("3. Transferuri");
@@ -405,12 +512,10 @@ public class Main {
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  CONTURI CLIENT
-    // ─────────────────────────────────────────────
+
     private static void meniuConturiClient(Client client) {
         while (true) {
-            System.out.println("\n=== CONTURILE MELE ===");
+            System.out.println("\nConturile mele");
             System.out.println("1. Adauga cont");
             System.out.println("2. Sterge cont");
             System.out.println("3. Vezi toate conturile si cardurile");
@@ -439,26 +544,22 @@ public class Main {
     }
 
     private static void afiseazaConturiSiCarduriFlow(Client client) {
-        System.out.println("\n--- CONTURILE TALE ---");
+        System.out.println("\nConturile tale: ");
         List<ContBancar> conturi = client.getConturi();
         if (conturi.isEmpty()) {
             System.out.println("Nu ai niciun cont.");
         } else {
             for (ContBancar c : conturi) {
-                String tip = (c instanceof ContCurent) ? "Cont Curent" :
-                             (c instanceof ContEconomii) ? "Cont Economii" : "Depozit la Termen";
-                System.out.println("  [" + tip + "] " + c.getIban() + " | Sold: " + c.getSold() + " " + c.getMoneda());
+                contService.afiseazaSold(c);
             }
         }
-        System.out.println("\n--- CARDURILE TALE ---");
+        System.out.println("\nCardurile tale: ");
         List<Card> carduri = client.getCarduri();
         if (carduri.isEmpty()) {
             System.out.println("Nu ai niciun card.");
         } else {
             for (Card c : carduri) {
-                String tip = (c instanceof CardCredit) ? "Credit" : "Debit";
-                String stare = c.isActiv() ? "ACTIV" : "BLOCAT";
-                System.out.println("  [" + tip + "] **** " + c.getPan() + " | " + stare);
+                c.afiseazaDetalii();
             }
         }
     }
@@ -495,24 +596,28 @@ public class Main {
         double suma = citesteDouble();
         try {
             tranzactieService.transfera(client, suma, sursa, dest, "Schimb valutar");
+            ContRepository.getInstance().updateSold(sursa);
+            ContRepository.getInstance().updateSold(dest);
+            if (!client.getTranzactii().isEmpty()) {
+                Tranzactie transfer = client.getTranzactii().get(client.getTranzactii().size() - 1);
+                TranzactiiRepository.getInstance().save(transfer);
+            }
             System.out.println("Schimb valutar efectuat cu succes.");
         } catch (Exception e) {
             System.out.println("Eroare: " + e.getMessage());
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  CARDURI CLIENT
-    // ─────────────────────────────────────────────
     private static void meniuCarduriClient(Client client) {
         while (true) {
-            System.out.println("\n=== CARDURILE MELE ===");
+            System.out.println("\nCardurile tale");
             System.out.println("1. Emite card");
             System.out.println("2. Blocheaza card");
             System.out.println("3. Modifica limita (max 60000 RON)");
             System.out.println("4. Schimba PIN");
             System.out.println("5. Plata cu cardul");
             System.out.println("6. Calculeaza dobanda");
+            System.out.println("7. Ramburseaza credit");
             System.out.println("0. Inapoi");
             System.out.print("Alege optiunea: ");
 
@@ -524,6 +629,7 @@ public class Main {
                 case 4: schimbaPinFlow(client); break;
                 case 5: plataCardFlow(client); break;
                 case 6: calculeazaDobandaCardFlow(client); break;
+                case 7: ramburseazaCreditFlow(client); break;
                 case 0: return;
                 default: System.out.println("Optiune invalida.");
             }
@@ -561,6 +667,7 @@ public class Main {
         int nrCarduri = client.getCarduriActive().size();
         try {
             cardService.modificaLimita((CardDebit) card, limita, nrCarduri);
+            CardRepository.getInstance().updateStatusOrPin(card);
             System.out.println("Limita modificata cu succes.");
         } catch (Exception e) {
             System.out.println("Eroare: " + e.getMessage());
@@ -576,6 +683,7 @@ public class Main {
         String pinNou = scanner.nextLine();
         try {
             cardService.schimbaPin(card, pinNou, ci);
+            CardRepository.getInstance().updateStatusOrPin(card);
         } catch (Exception e) {
             System.out.println("Eroare: " + e.getMessage());
         }
@@ -596,14 +704,17 @@ public class Main {
         System.out.print("Suma de plata: ");
         double suma = citesteDouble();
         cardService.plataCard(card, suma);
+        if (card instanceof CardDebit cardDebit) {
+            ContRepository.getInstance().updateSold(cardDebit.getContAsociat());
+        } else if (card instanceof CardCredit cardCredit) {
+            CardRepository.getInstance().updateCreditData(cardCredit);
+        }
     }
 
-    // ─────────────────────────────────────────────
-    //  TRANSFERURI SI INCASARI
-    // ─────────────────────────────────────────────
+
     private static void meniuTransferuri(Client client) {
         while (true) {
-            System.out.println("\n=== TRANSFERURI ===");
+            System.out.println("\nTransferuri");
             System.out.println("1. Fa transfer");
             System.out.println("0. Inapoi");
             System.out.print("Alege optiunea: ");
@@ -623,7 +734,6 @@ public class Main {
         if (sursa == null) return;
         System.out.print("IBAN destinatie: ");
         String ibanDest = scanner.nextLine();
-        // Cautam contul destinatie in toate conturile clientilor
         ContBancar dest = gasesteCont(ibanDest, clientService.getClienti());
         if (dest == null) {
             System.out.println("Contul destinatie nu a fost gasit.");
@@ -635,15 +745,23 @@ public class Main {
         String detalii = scanner.nextLine();
         try {
             tranzactieService.transfera(client, suma, sursa, dest, detalii);
+            ContRepository.getInstance().updateSold(sursa);
+            ContRepository.getInstance().updateSold(dest);
+            if (!client.getTranzactii().isEmpty()) {
+                Tranzactie transfer = client.getTranzactii().get(client.getTranzactii().size() - 1);
+                TranzactiiRepository.getInstance().save(transfer);
+            }
             System.out.println("Transfer efectuat cu succes.");
         } catch (Exception e) {
             System.out.println("Eroare: " + e.getMessage());
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  HELPER METHODS
-    // ─────────────────────────────────────────────
+
+
+
+
+
     private static Moneda selecteazaMoneda() {
         System.out.println("Moneda: 1.RON  2.EUR  3.USD  4.GBP  0.Inapoi");
         System.out.print("Alege: ");
@@ -659,16 +777,22 @@ public class Main {
     }
 
     private static ContBancar selecteazaCont(Client client) {
-        List<ContBancar> conturi = client.getConturi();
+        List<ContBancar> conturiAll = client.getConturi();
+        List<ContBancar> conturi = new java.util.ArrayList<>();
+        for (ContBancar c : conturiAll) {
+            if (c.isActiv()) {
+                conturi.add(c);
+            }
+        }
         if (conturi.isEmpty()) {
-            System.out.println("Clientul nu are niciun cont.");
+            System.out.println("Clientul nu are niciun cont activ.");
             return null;
         }
         System.out.println("Conturi disponibile:");
         for (int i = 0; i < conturi.size(); i++) {
             ContBancar c = conturi.get(i);
             String tip = (c instanceof ContCurent) ? "Curent" :
-                         (c instanceof ContEconomii) ? "Economii" : "Depozit";
+                          (c instanceof ContEconomii) ? "Economii" : "Depozit";
             System.out.println((i + 1) + ". [" + tip + "] " + c.getIban() + " - " + c.getSold() + " " + c.getMoneda());
         }
         System.out.print("Alege: ");

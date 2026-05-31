@@ -54,5 +54,14 @@ public class TranzactieService {
         }
     }
 
-
+    public void afiseazaTranzactiile(Client client) {
+        List<Tranzactie> lista = client.getTranzactii();
+        if (lista.isEmpty()) {
+            System.out.println("Nu exista tranzactii.");
+            return;
+        }
+        for (Tranzactie t : lista) {
+            t.afiseazaDetalii();
+        }
+    }
 }

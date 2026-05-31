@@ -46,4 +46,12 @@ public class CardDebit extends Card {
             return false;
         }
     }
+
+    public double getLimita() {
+        return limita;
+    }
+
+    public ContCurent getContAsociat() {
+        return contAsociat;
+    }
 }

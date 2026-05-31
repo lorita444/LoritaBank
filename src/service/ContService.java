@@ -25,8 +25,15 @@ public class ContService {
         return cont;
     }
 
-    public ContEconomii deschideContEconomii(Moneda moneda, Client client, float rataDobanda) {
+    public ContEconomii deschideContEconomiiAdmin(Moneda moneda, Client client, float rataDobanda) {
         ContEconomii cont = new ContEconomii(moneda, client, rataDobanda);
+        inregistreazaCont(client, cont);
+        AuditService.log("Deschidere cont economii", Integer.toString(client.getIdClient()), cont.getIban());
+        return cont;
+    }
+
+    public ContEconomii deschideContEconomii(Moneda moneda, Client client) {
+        ContEconomii cont = new ContEconomii(moneda, client);
         inregistreazaCont(client, cont);
         AuditService.log("Deschidere cont economii", Integer.toString(client.getIdClient()), cont.getIban());
         return cont;
@@ -71,5 +78,9 @@ public class ContService {
     public void afiseazaSold(ContBancar contBancar) {
         System.out.println("Soldul contului " + contBancar.getIban() + " este: " + contBancar.getSold() + " " + contBancar.getMoneda());
         AuditService.log("Afisare sold", Integer.toString(contBancar.getTitular().getIdClient()), contBancar.getIban());
+    }
+
+    public List<ContBancar> getToateConturileEver() {
+        return toateConturileEver;
     }
 }
